@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sign in with Google — Example</title>
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+      body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; }
+      .card { padding:24px; border:1px solid #eee; border-radius:12px; width:360px; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+      #profile { margin-top:16px; }
+      img.avatar { width:72px; height:72px; border-radius:50%; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>Sign in with Google</h2>
+      <div id="g_id_onload"></div>
+      <div id="buttonDiv"></div>
+      <div id="status"></div>
+      <div id="profile"></div>
+    </div>
+
+    <script>
+      // Replace with the exact client ID the user provided
+      const CLIENT_ID = "747625177326-ap18e4qf72g6d76197edhjt4j4s1lo30.apps.googleusercontent.com";
+
+      // callback to handle credential response (ID token)
+      async function handleCredentialResponse(response) {
+        // response.credential is the ID token (JWT)
+        document.getElementById('status').textContent = 'Received token — verifying on server...';
+
+        try {
+          const res = await fetch('/verify-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_token: response.credential })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            document.getElementById('status').textContent = 'Signed in as: ' + (data.email || data.name);
+            showProfile(data);
+          } else {
+            document.getElementById('status').textContent = 'Server verification failed: ' + (data.error || res.status);
+          }
+        } catch (err) {
+          document.getElementById('status').textContent = 'Network error: ' + err.message;
+        }
+      }
+
+      function showProfile(info) {
+        const p = document.getElementById('profile');
+        p.innerHTML = `
+          <img class="avatar" src="${info.picture || ''}" alt="avatar" />
+          <div><strong>${info.name || ''}</strong></div>
+          <div>${info.email || ''}</div>
+        `;
+      }
+
+      window.onload = function () {
+        // Initialize the Google Identity Services client
+        google.accounts.id.initialize({
+          client_id: CLIENT_ID,
+          callback: handleCredentialResponse
+        });
+
+        // Render the "Sign in with Google" button
+        google.accounts.id.renderButton(
+          document.getElementById('buttonDiv'),
+          { theme: 'outline', size: 'large' } // customization options
+        );
+
+        // Optionally show One Tap prompt
+        google.accounts.id.prompt(); // will show One Tap if available
+      };
+    </script>
+  </body>
+</html>

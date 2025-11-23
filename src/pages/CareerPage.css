@@ -1,0 +1,118 @@
+/* CareerPage.css */
+
+.career-page-container {
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #ff3b3b 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Fade-in animation for sections */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Glassmorphism effect for sections */
+.about-section .bg-gray-900\/40,
+.skills-section .bg-gray-900\/40,
+.future-goals .bg-gray-900\/40 {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Skill cards hover effect */
+.skills-section .bg-gray-900\/40:hover {
+  background: rgba(255, 59, 59, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(255, 59, 59, 0.3);
+}
+
+/* Timeline items */
+.timeline .flex {
+  position: relative;
+}
+
+.timeline .flex::before {
+  content: '';
+  position: absolute;
+  left: 32px;
+  top: 80px;
+  bottom: -40px;
+  width: 2px;
+  background: linear-gradient(to bottom, #ff3b3b, transparent);
+  z-index: 1;
+}
+
+.timeline .flex:last-child::before {
+  display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-section p {
+    font-size: 1rem;
+  }
+
+  .about-section,
+  .skills-section,
+  .future-goals {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .timeline .flex {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .timeline .flex .flex-shrink-0 {
+    margin-bottom: 1rem;
+    margin-right: 0;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0f0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ff3b3b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e63939;
+}
