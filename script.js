@@ -210,6 +210,28 @@ const songs = [
 
 let currentSongIndex = 0;
 
+// LocalStorage functions untuk menyimpan custom playlist
+const STORAGE_KEY = "customPlaylists";
+
+function savePlaylistsToStorage() {
+  // Hanya simpan playlist yang custom (id >= 4)
+  const customPlaylists = songs.slice(4);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(customPlaylists));
+}
+
+function loadPlaylistsFromStorage() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const customPlaylists = JSON.parse(stored);
+      // Tambah ke array songs
+      songs.push(...customPlaylists);
+    }
+  } catch (error) {
+    console.error("Error loading playlists from storage:", error);
+  }
+}
+
 // Song: I Don't Love You — My Chemical Romance
 const LRC_PATH = "I Dont Love You/I Don't Love You - My Chemical Romance (1).lrc";
 
@@ -564,6 +586,47 @@ nextButtons.forEach((btn) =>
 shuffleButtons.forEach((btn) => btn.addEventListener("click", toggleShuffle));
 repeatButtons.forEach((btn) => btn.addEventListener("click", toggleRepeat));
 
+// Function to render custom playlist buttons
+function renderCustomPlaylistButtons() {
+  // Get custom playlists (id >= 4)
+  const customPlaylists = songs.slice(4);
+  const playlistContainer = document.querySelector(".sidebar-playlists");
+
+  // Remove existing custom buttons
+  const customButtons = playlistContainer.querySelectorAll('[data-song-index]');
+  customButtons.forEach((btn, index) => {
+    if (index >= 4) btn.remove();
+  });
+
+  // Create buttons for each custom playlist
+  customPlaylists.forEach((song) => {
+    const newButton = document.createElement("button");
+    newButton.className = "playlist-item";
+    newButton.dataset.songIndex = String(song.id);
+
+    const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("width", "16");
+    icon.setAttribute("height", "16");
+    icon.setAttribute("fill", "currentColor");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z");
+    icon.appendChild(path);
+
+    const text = document.createTextNode(song.title);
+    newButton.appendChild(icon);
+    newButton.appendChild(text);
+
+    playlistContainer.appendChild(newButton);
+
+    // Add click handler
+    newButton.addEventListener("click", () => {
+      const index = parseInt(newButton.dataset.songIndex, 10);
+      loadSong(index);
+    });
+  });
+}
+
 // Playlist items click handler
 document.querySelectorAll(".playlist-item").forEach((item) => {
   item.addEventListener("click", () => {
@@ -588,32 +651,11 @@ function addPlaylistItem(title, artist = "Unknown") {
 
   songs.push(newSong);
 
-  // Create new playlist item button
-  const playlistContainer = document.querySelector(".sidebar-playlists");
-  const newButton = document.createElement("button");
-  newButton.className = "playlist-item";
-  newButton.dataset.songIndex = String(newId);
+  // Save to localStorage
+  savePlaylistsToStorage();
 
-  const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  icon.setAttribute("viewBox", "0 0 24 24");
-  icon.setAttribute("width", "16");
-  icon.setAttribute("height", "16");
-  icon.setAttribute("fill", "currentColor");
-  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path.setAttribute("d", "M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z");
-  icon.appendChild(path);
-
-  const text = document.createTextNode(title);
-  newButton.appendChild(icon);
-  newButton.appendChild(text);
-
-  playlistContainer.appendChild(newButton);
-
-  // Add click handler
-  newButton.addEventListener("click", () => {
-    const index = parseInt(newButton.dataset.songIndex, 10);
-    loadSong(index);
-  });
+  // Re-render all custom buttons
+  renderCustomPlaylistButtons();
 }
 
 audio.addEventListener("loadedmetadata", () => {
@@ -637,6 +679,12 @@ audio.addEventListener("ended", () => {
 });
 
 window.addEventListener("load", () => {
+  // Load custom playlists from storage
+  loadPlaylistsFromStorage();
+  
+  // Render custom playlist buttons
+  renderCustomPlaylistButtons();
+
   const vol = audio.volume || 0.8;
   volumeSlider.value = String(vol);
   bottomVolumeSlider.value = String(vol);
