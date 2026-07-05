@@ -1,23 +1,26 @@
-# BlackboxAI Premium Music App — TODO
+# TODO — BlackboxAI Music Player Update
 
-## Step 1 — Plan approval
-- [x] Gather repo state: index.html/style.css/script.js + assets + LRC file.
-- [x] Confirm constraint: album cover should not move.
+## Step 1 — Repo understanding
+- [x] Baca `script.js`, `index.html`, `style.css` untuk lihat implementasi lyrics/next-prev/ended.
 
-## Step 2 — Song update: “The Reason”
-- [x] Update `index.html` UI (judul & artist: The Reason — Hoobastank).
-- [x] Update `index.html` audio source to `The Reason/The Reason_spotdown.org.mp3`.
-- [x] Update `index.html` bottom bar title/artist.
-- [x] Fix minor indentation issue in bottom bar image.
+## Step 2 — Lyric sync + advanced LRC
+- [ ] Ubah `loadLyrics()` agar memuat file LRC dari `song.lrc` untuk semua lagu.
+- [ ] Jadikan `lrcEmbedded` hanya fallback bila fetch gagal (mis. file://).
 
-## Step 3 — Lyrics update
-- [x] Update `script.js` to load `The Reason/The Reason - Hoobastank.lrc`.
-- [x] Update embedded fallback LRC (keep player working under file://).
+## Step 3 — Skip song (next/prev)
+- [ ] Ubah handler tombol `prev` agar memanggil `loadSong(index-1)`.
+- [ ] Ubah handler tombol `next` agar memanggil `loadSong(index+1)`.
+- [ ] Tetap dukung shuffle/repeat sesuai state yang ada.
 
-## Step 4 — Verification
-- [ ] Open `index.html` in browser and confirm:
-  - Play/pause works
-  - Timeline updates
-  - Lyrics sync/auto-scroll works
+## Step 4 — Auto-advance saat lagu selesai
+- [ ] Ubah `audio.ended`:
+  - repeat: ulang lagu saat ini
+  - shuffle: lanjut acak dengan tetap main
+  - selain itu: lanjut id berikutnya (0→1→2→...)
 
+## Step 5 — Verifikasi manual
+- [ ] Jalankan `index.html` di browser:
+  - next/prev berpindah lagu
+  - lirik word-by-word mengikuti timeline
+  - lagu selesai otomatis lanjut lagu berikutnya
 
